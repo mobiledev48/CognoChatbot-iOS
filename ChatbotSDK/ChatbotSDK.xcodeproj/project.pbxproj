@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		8D51F38D281824A500E5E8FF /* ChatbotSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D51F38C281824A500E5E8FF /* ChatbotSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8D51F394281824B800E5E8FF /* ChatbotSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D51F393281824B800E5E8FF /* ChatbotSDK.swift */; };
+		8D51F3AA281AC6A600E5E8FF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D51F3A9281AC6A600E5E8FF /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8D51F389281824A500E5E8FF /* ChatbotSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ChatbotSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D51F38C281824A500E5E8FF /* ChatbotSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatbotSDK.h; sourceTree = "<group>"; };
 		8D51F393281824B800E5E8FF /* ChatbotSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotSDK.swift; sourceTree = "<group>"; };
+		8D51F3A9281AC6A600E5E8FF /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +51,7 @@
 			children = (
 				8D51F38C281824A500E5E8FF /* ChatbotSDK.h */,
 				8D51F393281824B800E5E8FF /* ChatbotSDK.swift */,
+				8D51F3A9281AC6A600E5E8FF /* Constants.swift */,
 			);
 			path = ChatbotSDK;
 			sourceTree = "<group>";
@@ -134,6 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D51F394281824B800E5E8FF /* ChatbotSDK.swift in Sources */,
+				8D51F3AA281AC6A600E5E8FF /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

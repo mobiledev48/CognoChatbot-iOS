@@ -21,31 +21,74 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
     let audioEngine = AVAudioEngine()
     let audioSession = AVAudioSession.sharedInstance()
     
-    //  Display & configure webview
-    public func dispWebView(viewController: UIViewController) {
-        let config: WKWebViewConfiguration = WKWebViewConfiguration()
-        config.preferences.javaScriptCanOpenWindowsAutomatically = true
-        config.userContentController.add(self, name: "close")
-        config.userContentController.add(self, name: "speechToText")
+    //  Access token verification
+    func verifyToken() {
+        let url = URL(string: Constants.tokenVerificationUrl)!
+        var request = URLRequest(url: url)
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        let parameters: [String: Any] = [
+            "bot_id": Constants.botId,
+            "access_token": Constants.accessToken
+        ]
+        request.httpBody = parameters.percentEncoded()
         
-        let preferences: WKWebpagePreferences = WKWebpagePreferences()
-        preferences.allowsContentJavaScript = true
-        
-        webView.configuration.defaultWebpagePreferences = preferences
-        webView = WKWebView(frame: viewController.view.frame, configuration: config)
-        webView.navigationDelegate = viewController.self as? WKNavigationDelegate
-        webView.uiDelegate = webViewController.self as? WKUIDelegate
-        webView.translatesAutoresizingMaskIntoConstraints = true
-        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        webViewController.view.addSubview(webView)
-        //  Change string url to with verified url
-        if let _url = URL(string: "https://easychat-dev.allincall.in/chat/index/?id=602&channel=iOS") {
-            let request = URLRequest(url: _url)
-            webView.load(request)
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data,
+                  let response = response as? HTTPURLResponse,
+                  error == nil
+            else {
+                print("error", error ?? "Unknown error")
+                return
+            }
+            
+            guard (200 ... 299) ~= response.statusCode else {
+                print("Status Code is not 200, is \(response.statusCode)")
+                return
+            }
+            
+            do {
+                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any]
+                if let jsonData = json, jsonData["status"] as? Int == 200 {
+                    Constants.isTokenVerify = true
+                } else {
+                    Constants.isTokenVerify = false
+                }
+            } catch let error as NSError {
+                print(error)
+            }
         }
-        webViewController.modalPresentationStyle = .fullScreen
-        viewController.present(webViewController, animated: true, completion: nil)
+        task.resume()
+        
+    }
+    
+    //  Display & configure webview while token verification is true
+    public func dispWebView(viewController: UIViewController) {
+        if Constants.isTokenVerify {
+            let config: WKWebViewConfiguration = WKWebViewConfiguration()
+            config.preferences.javaScriptCanOpenWindowsAutomatically = true
+            config.userContentController.add(self, name: "close")
+            config.userContentController.add(self, name: "speechToText")
+            
+            let preferences: WKWebpagePreferences = WKWebpagePreferences()
+            preferences.allowsContentJavaScript = true
+            
+            webView.configuration.defaultWebpagePreferences = preferences
+            webView = WKWebView(frame: viewController.view.frame, configuration: config)
+            webView.navigationDelegate = viewController.self as? WKNavigationDelegate
+            webView.uiDelegate = webViewController.self as? WKUIDelegate
+            webView.translatesAutoresizingMaskIntoConstraints = true
+            webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            
+            webViewController.view.addSubview(webView)
+            //  Change string url to with verified url
+            if let _url = URL(string: "https://easychat-dev.allincall.in/chat/index/?id=602&channel=iOS") {
+                let request = URLRequest(url: _url)
+                webView.load(request)
+            }
+            webViewController.modalPresentationStyle = .fullScreen
+            viewController.present(webViewController, animated: true, completion: nil)
+        }
     }
     
     //  Text to Voice Conversion
@@ -121,7 +164,7 @@ extension ChatbotSDK: WKScriptMessageHandler {
             
         } else if message.name == "speechToText" {
             print(" I am speech to Text ")
-//  Handle Speech to Text Here
+            //  Handle Speech to Text Here
             startRecording()
             let alertController = UIAlertController(title: "\n\n\n\n\n\n", message: nil, preferredStyle: .actionSheet)
             let margin: CGFloat = 8.0
@@ -144,5 +187,29 @@ extension ChatbotSDK: WKScriptMessageHandler {
     }
     
 }
+
+extension Dictionary {
+    func percentEncoded() -> Data? {
+        return map { key, value in
+            let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            let escapedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            return escapedKey + "=" + escapedValue
+        }
+        .joined(separator: "&")
+        .data(using: .utf8)
+    }
+}
+
+extension CharacterSet {
+    static let urlQueryValueAllowed: CharacterSet = {
+        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
+        let subDelimitersToEncode = "!$&'()*+,;="
+        
+        var allowed = CharacterSet.urlQueryAllowed
+        allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
+        return allowed
+    }()
+}
+
 
 

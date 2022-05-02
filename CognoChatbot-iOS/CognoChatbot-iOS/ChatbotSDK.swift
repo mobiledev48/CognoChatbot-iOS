@@ -22,7 +22,7 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
     let audioSession = AVAudioSession.sharedInstance()
     
     //  Access token verification
-    func verifyToken() {
+    public func verifyToken() {
         let url = URL(string: Constants.tokenVerificationUrl)!
         print(" Verify Token Url= \(url)")
         var request = URLRequest(url: url)

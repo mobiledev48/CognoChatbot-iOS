@@ -9,11 +9,11 @@ import Foundation
 
 public class Constants {
     
-    static var botUrl = ""
-    static var botId = ""
-    static var accessToken = ""
-    static var isTokenVerify = false
-    static let mainUrl = "https://easychat-dev.allincall.in"
-    static let tokenVerificationUrl = mainUrl + "/chat/verify-access-token/"
+    public static var botUrl = ""
+    public static var botId = ""
+    public static var accessToken = ""
+    public static var isTokenVerify = false
+    public static let mainUrl = "https://easychat-dev.allincall.in"
+    public static let tokenVerificationUrl = mainUrl + "/chat/verify-access-token/"
 }
 

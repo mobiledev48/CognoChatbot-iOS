@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Constants {
+public class Constants {
     
     static var botUrl = ""
     static var botId = ""

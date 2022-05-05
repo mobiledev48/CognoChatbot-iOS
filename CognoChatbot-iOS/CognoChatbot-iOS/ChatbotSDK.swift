@@ -24,9 +24,7 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
     
     //  Access token verification
     public func verifyToken() {
-        guard let url = URL(string: Constants.botUrl + Constants.tokenVerificationUrl)
-        else { return }
-        print(" Verify Token Url= \(url)")
+        let url = URL(string: Constants.botUrl + Constants.tokenVerificationUrl)!
         var request = URLRequest(url: url)
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
@@ -40,15 +38,9 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             guard let data = data,
                   let response = response as? HTTPURLResponse,
                   error == nil
-            else {
-                print("Error in Data task:", error ?? "Unknown error")
-                return
-            }
+            else { return }
             
-            guard (200 ... 299) ~= response.statusCode else {
-                print("Status Code is not 200, is \(response.statusCode)")
-                return
-            }
+            guard (200 ... 299) ~= response.statusCode else { return }
             
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any]
@@ -73,7 +65,6 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             config.userContentController.add(self, name: "speechToText")
             config.userContentController.add(self, name: "textToVoice")
             config.userContentController.add(self, name: "terminateTextToVoice")
-            config.userContentController.add(self, name: "log")
             
             let preferences: WKWebpagePreferences = WKWebpagePreferences()
             preferences.allowsContentJavaScript = true
@@ -89,7 +80,6 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             webViewController.view.addSubview(webView)
             //  Change string url to with verified url
             if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS") {
-                print("My Web URl= \(_url)")
                 let request = URLRequest(url: _url)
                 webView.load(request)
             }
@@ -103,6 +93,9 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
     public func textToVoice(text: String, lang: String) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: lang)
+        if utterance.voice == nil {
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        }
         synth.speak(utterance)
     }
     
@@ -198,8 +191,6 @@ extension ChatbotSDK: WKScriptMessageHandler {
             }
         } else if message.name == "terminateTextToVoice" {
                 synth.stopSpeaking(at: .immediate)
-        } else if message.name == "log" {
-            print(" ** Log ** \(message.body), **** \(message.world), \(message.description), \(message)")
         }
     }
     
@@ -228,7 +219,7 @@ extension CharacterSet {
     }()
 }
 
-//  Clear old webview data/ clear cache
+//  Clear old webview data clear cache
 extension WKWebView {
 
     func cleanAllCookies() {
@@ -236,7 +227,6 @@ extension WKWebView {
         WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
             records.forEach { record in
                 WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
-                print("Cookie ::: \(record) deleted")
             }
         }
     }
@@ -245,4 +235,5 @@ extension WKWebView {
         self.configuration.processPool = WKProcessPool()
     }
 }
+
 

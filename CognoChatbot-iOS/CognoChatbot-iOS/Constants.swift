@@ -13,7 +13,6 @@ public class Constants {
     public static var botId = ""
     public static var accessToken = ""
     public static var isTokenVerify = false
-    public static let mainUrl = "https://easychat-dev.allincall.in"
-    public static let tokenVerificationUrl = mainUrl + "/chat/verify-access-token/"
+    public static let tokenVerificationUrl = "/chat/verify-access-token/"
 }
 

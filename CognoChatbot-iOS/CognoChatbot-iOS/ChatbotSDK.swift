@@ -12,7 +12,7 @@ import Speech
 
 public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
     
-    var webView: WKWebView = WKWebView()
+    var webViewGlobal: WKWebView = WKWebView()
     let webViewController = UIViewController()
     var customView: UITextView = UITextView()
     let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
@@ -20,10 +20,12 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
     var recognitionTask: SFSpeechRecognitionTask?
     let audioEngine = AVAudioEngine()
     let audioSession = AVAudioSession.sharedInstance()
+    let synth = AVSpeechSynthesizer()
     
     //  Access token verification
     public func verifyToken() {
-        let url = URL(string: Constants.tokenVerificationUrl)!
+        guard let url = URL(string: Constants.botUrl + Constants.tokenVerificationUrl)
+        else { return }
         print(" Verify Token Url= \(url)")
         var request = URLRequest(url: url)
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -39,7 +41,7 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
                   let response = response as? HTTPURLResponse,
                   error == nil
             else {
-                print("error", error ?? "Unknown error")
+                print("Error in Data task:", error ?? "Unknown error")
                 return
             }
             
@@ -69,10 +71,14 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             config.preferences.javaScriptCanOpenWindowsAutomatically = true
             config.userContentController.add(self, name: "close")
             config.userContentController.add(self, name: "speechToText")
+            config.userContentController.add(self, name: "textToVoice")
+            config.userContentController.add(self, name: "terminateTextToVoice")
+            config.userContentController.add(self, name: "log")
             
             let preferences: WKWebpagePreferences = WKWebpagePreferences()
             preferences.allowsContentJavaScript = true
             
+            var webView: WKWebView = WKWebView()
             webView.configuration.defaultWebpagePreferences = preferences
             webView = WKWebView(frame: viewController.view.frame, configuration: config)
             webView.navigationDelegate = viewController.self as? WKNavigationDelegate
@@ -82,21 +88,21 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             
             webViewController.view.addSubview(webView)
             //  Change string url to with verified url
-            if let _url = URL(string: Constants.mainUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS") {
+            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS") {
                 print("My Web URl= \(_url)")
                 let request = URLRequest(url: _url)
                 webView.load(request)
             }
             webViewController.modalPresentationStyle = .fullScreen
             viewController.present(webViewController, animated: true, completion: nil)
+            webViewGlobal = webView
         }
     }
     
     //  Text to Voice Conversion
-    public func textToVoice(text: String) {
+    public func textToVoice(text: String, lang: String) {
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        let synth = AVSpeechSynthesizer()
+        utterance.voice = AVSpeechSynthesisVoice(language: lang)
         synth.speak(utterance)
     }
     
@@ -161,10 +167,11 @@ extension ChatbotSDK: WKScriptMessageHandler {
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         
         if message.name == "close" {
-            webViewController.dismiss(animated: true, completion: nil)
-            
+            webViewController.dismiss(animated: true) {
+                self.webViewGlobal.cleanAllCookies()
+                self.webViewGlobal.refreshCookies()
+            }
         } else if message.name == "speechToText" {
-            print(" I am speech to Text ")
             //  Handle Speech to Text Here
             startRecording()
             let alertController = UIAlertController(title: "\n\n\n\n\n\n", message: nil, preferredStyle: .actionSheet)
@@ -179,11 +186,20 @@ extension ChatbotSDK: WKScriptMessageHandler {
                 if let voiceText = self.customView.text {
                     self.audioEngine.stop()
                     self.recognitionRequest?.endAudio()
-                    self.webView.evaluateJavaScript("speech_intent_for_ios('\(voiceText)')", completionHandler: nil)
+                    self.webViewGlobal.evaluateJavaScript("speech_intent_for_ios('\(voiceText)')", completionHandler: nil)
                 }
             })
             alertController.addAction(doneAction)
             webViewController.present(alertController, animated: true, completion: nil)
+        } else if message.name == "textToVoice" {
+            let sentData = message.body as! Dictionary<String, String>
+            if let message: String = sentData["message_to_be_spoken"], let language: String = sentData["selected_language"] {
+                textToVoice(text: message, lang: language)
+            }
+        } else if message.name == "terminateTextToVoice" {
+                synth.stopSpeaking(at: .immediate)
+        } else if message.name == "log" {
+            print(" ** Log ** \(message.body), **** \(message.world), \(message.description), \(message)")
         }
     }
     
@@ -211,3 +227,22 @@ extension CharacterSet {
         return allowed
     }()
 }
+
+//  Clear old webview data/ clear cache
+extension WKWebView {
+
+    func cleanAllCookies() {
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            records.forEach { record in
+                WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+                print("Cookie ::: \(record) deleted")
+            }
+        }
+    }
+
+    func refreshCookies() {
+        self.configuration.processPool = WKProcessPool()
+    }
+}
+

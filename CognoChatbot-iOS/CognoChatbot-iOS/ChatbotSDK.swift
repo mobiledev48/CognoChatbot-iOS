@@ -167,11 +167,24 @@ extension ChatbotSDK: WKScriptMessageHandler {
         } else if message.name == "speechToText" {
             //  Handle Speech to Text Here
             startRecording()
-            let alertController = UIAlertController(title: "\n\n\n\n\n\n", message: nil, preferredStyle: .actionSheet)
+            var alertStyle = UIAlertController.Style.actionSheet
+            var width: CGFloat = CGFloat()
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                alertStyle = UIAlertController.Style.alert
+            }
+        
+            let alertController = UIAlertController(title: "\n\n\n\n\n\n", message: nil, preferredStyle: alertStyle)
             let margin: CGFloat = 8.0
-            let rect = CGRect(x: margin, y: margin, width: alertController.view.bounds.size.width - margin * 4.0, height: 100.0)
+            width = alertController.view.bounds.size.width
+            
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                width = 290
+            }
+            
+            let rect = CGRect(x: margin, y: margin, width: width - margin * 4.0, height: 100.0)
+            
             customView = UITextView(frame: rect)
-            customView.backgroundColor = UIColor.clear
+            customView.backgroundColor = UIColor.red
             customView.font = UIFont(name: "Helvetica", size: 20)
             customView.text = "Say something, I'm listening!"
             alertController.view.addSubview(customView)
@@ -183,6 +196,12 @@ extension ChatbotSDK: WKScriptMessageHandler {
                 }
             })
             alertController.addAction(doneAction)
+            
+            if let presenter = alertController.popoverPresentationController {
+                presenter.sourceView = self.view
+                presenter.permittedArrowDirections = .init(rawValue: 0)
+                presenter.sourceRect = webViewController.view.bounds
+            }
             webViewController.present(alertController, animated: true, completion: nil)
         } else if message.name == "textToVoice" {
             let sentData = message.body as! Dictionary<String, String>

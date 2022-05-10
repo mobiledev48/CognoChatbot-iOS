@@ -172,7 +172,7 @@ extension ChatbotSDK: WKScriptMessageHandler {
             if (UIDevice.current.userInterfaceIdiom == .pad) {
                 alertStyle = UIAlertController.Style.alert
             }
-        
+            
             let alertController = UIAlertController(title: "\n\n\n\n\n\n", message: nil, preferredStyle: alertStyle)
             let margin: CGFloat = 8.0
             width = alertController.view.bounds.size.width
@@ -188,6 +188,7 @@ extension ChatbotSDK: WKScriptMessageHandler {
             customView.font = UIFont(name: "Helvetica", size: 20)
             customView.text = "Say something, I'm listening!"
             alertController.view.addSubview(customView)
+            
             let doneAction = UIAlertAction(title: "DONE", style: UIAlertAction.Style.cancel, handler: { _ in
                 if let voiceText = self.customView.text {
                     self.audioEngine.stop()
@@ -202,14 +203,17 @@ extension ChatbotSDK: WKScriptMessageHandler {
                 presenter.permittedArrowDirections = .init(rawValue: 0)
                 presenter.sourceRect = webViewController.view.bounds
             }
+            
             webViewController.present(alertController, animated: true, completion: nil)
+            
         } else if message.name == "textToVoice" {
             let sentData = message.body as! Dictionary<String, String>
             if let message: String = sentData["message_to_be_spoken"], let language: String = sentData["selected_language"] {
                 textToVoice(text: message, lang: language)
             }
+            
         } else if message.name == "terminateTextToVoice" {
-                synth.stopSpeaking(at: .immediate)
+            synth.stopSpeaking(at: .immediate)
         }
     }
     
@@ -240,7 +244,7 @@ extension CharacterSet {
 
 //  Clear old webview data clear cache
 extension WKWebView {
-
+    
     func cleanAllCookies() {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
@@ -249,7 +253,7 @@ extension WKWebView {
             }
         }
     }
-
+    
     func refreshCookies() {
         self.configuration.processPool = WKProcessPool()
     }

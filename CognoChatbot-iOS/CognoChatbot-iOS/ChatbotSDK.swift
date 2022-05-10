@@ -184,7 +184,7 @@ extension ChatbotSDK: WKScriptMessageHandler {
             let rect = CGRect(x: margin, y: margin, width: width - margin * 4.0, height: 100.0)
             
             customView = UITextView(frame: rect)
-            customView.backgroundColor = UIColor.red
+            customView.backgroundColor = UIColor.clear
             customView.font = UIFont(name: "Helvetica", size: 20)
             customView.text = "Say something, I'm listening!"
             alertController.view.addSubview(customView)

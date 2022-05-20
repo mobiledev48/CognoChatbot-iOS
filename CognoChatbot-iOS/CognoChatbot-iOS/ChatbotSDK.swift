@@ -79,7 +79,7 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             
             webViewController.view.addSubview(webView)
             //  Change string url to with verified url
-            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS") {
+            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS" + "&category_name=" + Constants.category) {
                 let request = URLRequest(url: _url)
                 webView.load(request)
             }

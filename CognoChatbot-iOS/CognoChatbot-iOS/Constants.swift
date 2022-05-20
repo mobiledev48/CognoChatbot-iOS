@@ -12,6 +12,7 @@ public class Constants {
     public static var botUrl = ""
     public static var botId = ""
     public static var accessToken = ""
+    public static var category = ""
     public static var isTokenVerify = false
     public static let tokenVerificationUrl = "/chat/verify-access-token/"
 }

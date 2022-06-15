@@ -66,11 +66,22 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             config.userContentController.add(self, name: "textToVoice")
             config.userContentController.add(self, name: "terminateTextToVoice")
             
-            let preferences: WKWebpagePreferences = WKWebpagePreferences()
-            preferences.allowsContentJavaScript = true
-            
             var webView: WKWebView = WKWebView()
-            webView.configuration.defaultWebpagePreferences = preferences
+            
+            if #available(iOS 13.0, *) {
+                let preferences: WKWebpagePreferences = WKWebpagePreferences()
+                if #available(iOS 14.0, *) {
+                    preferences.allowsContentJavaScript = true
+                } else {
+                    webView.configuration.preferences.javaScriptEnabled = true
+                }
+                webView.configuration.defaultWebpagePreferences = preferences
+            } else {
+                let preferencesWK = WKPreferences()
+                preferencesWK.javaScriptEnabled = true
+                webView.configuration.preferences = preferencesWK
+            }
+            
             webView = WKWebView(frame: viewController.view.frame, configuration: config)
             webView.navigationDelegate = viewController.self as? WKNavigationDelegate
             webView.uiDelegate = webViewController.self as? WKUIDelegate

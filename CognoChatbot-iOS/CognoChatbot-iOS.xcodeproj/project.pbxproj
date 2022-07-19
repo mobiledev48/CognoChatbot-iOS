@@ -7,16 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03BFDAC5B271C77843DC8A94 /* Pods_CognoChatbot_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F3612456376C80E42298549 /* Pods_CognoChatbot_iOS.framework */; };
 		8DA7D93B282010A500B1C1BF /* CognoChatbot_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 8DA7D93A282010A500B1C1BF /* CognoChatbot_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8DA7D942282010F100B1C1BF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA7D941282010F100B1C1BF /* Constants.swift */; };
 		8DA7D9442820114A00B1C1BF /* ChatbotSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA7D9432820114A00B1C1BF /* ChatbotSDK.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B134F90B44D649369818952 /* Pods-CognoChatbot-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CognoChatbot-iOS.debug.xcconfig"; path = "Target Support Files/Pods-CognoChatbot-iOS/Pods-CognoChatbot-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		6F3612456376C80E42298549 /* Pods_CognoChatbot_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CognoChatbot_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA7D937282010A500B1C1BF /* CognoChatbot_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CognoChatbot_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA7D93A282010A500B1C1BF /* CognoChatbot_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CognoChatbot_iOS.h; sourceTree = "<group>"; };
 		8DA7D941282010F100B1C1BF /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		8DA7D9432820114A00B1C1BF /* ChatbotSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotSDK.swift; sourceTree = "<group>"; };
+		98FCD5286952543F45DF7E1E /* Pods-CognoChatbot-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CognoChatbot-iOS.release.xcconfig"; path = "Target Support Files/Pods-CognoChatbot-iOS/Pods-CognoChatbot-iOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24,17 +28,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03BFDAC5B271C77843DC8A94 /* Pods_CognoChatbot_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		489C51B87FC078EBDCF92AFE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6F3612456376C80E42298549 /* Pods_CognoChatbot_iOS.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8CBE9AA544007093F61D38CE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2B134F90B44D649369818952 /* Pods-CognoChatbot-iOS.debug.xcconfig */,
+				98FCD5286952543F45DF7E1E /* Pods-CognoChatbot-iOS.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		8DA7D92D282010A500B1C1BF = {
 			isa = PBXGroup;
 			children = (
 				8DA7D939282010A500B1C1BF /* CognoChatbot-iOS */,
 				8DA7D938282010A500B1C1BF /* Products */,
+				8CBE9AA544007093F61D38CE /* Pods */,
+				489C51B87FC078EBDCF92AFE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,6 +98,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8DA7D93E282010A500B1C1BF /* Build configuration list for PBXNativeTarget "CognoChatbot-iOS" */;
 			buildPhases = (
+				51130697F334112577C758A5 /* [CP] Check Pods Manifest.lock */,
 				8DA7D932282010A500B1C1BF /* Headers */,
 				8DA7D933282010A500B1C1BF /* Sources */,
 				8DA7D934282010A500B1C1BF /* Frameworks */,
@@ -130,6 +155,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		51130697F334112577C758A5 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-CognoChatbot-iOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DA7D933282010A500B1C1BF /* Sources */ = {
@@ -268,6 +318,7 @@
 		};
 		8DA7D93F282010A500B1C1BF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2B134F90B44D649369818952 /* Pods-CognoChatbot-iOS.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -299,6 +350,7 @@
 		};
 		8DA7D940282010A500B1C1BF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 98FCD5286952543F45DF7E1E /* Pods-CognoChatbot-iOS.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;

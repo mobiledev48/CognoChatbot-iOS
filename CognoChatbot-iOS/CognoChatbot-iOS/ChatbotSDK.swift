@@ -10,7 +10,7 @@ import WebKit
 import AVFoundation
 import Speech
 
-public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
+public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNavigationDelegate {
     
     var webViewGlobal: WKWebView = WKWebView()
     let webViewController = UIViewController()
@@ -23,7 +23,7 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
     let synth = AVSpeechSynthesizer()
     
     //  Access token verification
-    public func verifyToken() {
+    public func verifyToken(viewController: UIViewController, completion: @escaping (Bool) -> ()) {
         let url = URL(string: Constants.botUrl + Constants.tokenVerificationUrl)!
         var request = URLRequest(url: url)
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -46,8 +46,14 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any]
                 if let jsonData = json, jsonData["status"] as? Int == 200 {
                     Constants.isTokenVerify = true
+                    DispatchQueue.main.async {
+                        completion(true)
+                    }
                 } else {
                     Constants.isTokenVerify = false
+                    DispatchQueue.main.async {
+                        completion(false)
+                    }
                 }
             } catch let error as NSError {
                 print(error)
@@ -66,37 +72,42 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
             config.userContentController.add(self, name: "textToVoice")
             config.userContentController.add(self, name: "terminateTextToVoice")
             
-            var webView: WKWebView = WKWebView()
+            var webView: WKWebView? = nil {
+                didSet {
+                    webView?.navigationDelegate = self
+                    webView?.uiDelegate = self
+                }
+            }
             
+            webView = WKWebView()
             if #available(iOS 13.0, *) {
                 let preferences: WKWebpagePreferences = WKWebpagePreferences()
                 if #available(iOS 14.0, *) {
                     preferences.allowsContentJavaScript = true
                 } else {
-                    webView.configuration.preferences.javaScriptEnabled = true
+                    webView?.configuration.preferences.javaScriptEnabled = true
                 }
-                webView.configuration.defaultWebpagePreferences = preferences
+                webView?.configuration.defaultWebpagePreferences = preferences
             } else {
                 let preferencesWK = WKPreferences()
                 preferencesWK.javaScriptEnabled = true
-                webView.configuration.preferences = preferencesWK
+                webView?.configuration.preferences = preferencesWK
             }
             
-            webView = WKWebView(frame: viewController.view.frame, configuration: config)
-            webView.navigationDelegate = viewController.self as? WKNavigationDelegate
-            webView.uiDelegate = webViewController.self as? WKUIDelegate
-            webView.translatesAutoresizingMaskIntoConstraints = true
-            webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            webView = WKWebView(frame: webViewController.view.frame, configuration: config)
+            webView?.translatesAutoresizingMaskIntoConstraints = true
+            webView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             
-            webViewController.view.addSubview(webView)
-            //  Change string url to with verified url
+            guard let wv = webView else { return }
+            webViewController.view.addSubview(wv)
+//  Change string url to with verified url
             if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS" + "&category_name=" + Constants.category) {
                 let request = URLRequest(url: _url)
-                webView.load(request)
+                webView?.load(request)
             }
             webViewController.modalPresentationStyle = .fullScreen
             viewController.present(webViewController, animated: true, completion: nil)
-            webViewGlobal = webView
+            webViewGlobal = wv
         }
     }
     
@@ -162,8 +173,22 @@ public class ChatbotSDK: UIViewController, WKUIDelegate, WKNavigationDelegate {
         } catch {
             print("audioEngine couldn't start because of an error.")
         }
+        
     }
-    
+// Navigate webview according to url
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
+            if url.description.lowercased().range(of: "http://") != nil ||
+                url.description.lowercased().range(of: "https://") != nil ||
+                url.description.lowercased().range(of: "mailto:") != nil ||
+                url.description.lowercased().range(of: "tel://") != nil ||
+                url.description.lowercased().range(of: "&channel=ios") != nil {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        return nil
+    }
+
 }
 
 //  Handle User response for Webview Interface

@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
   spec.license      = "MIT"
   spec.author       = { "Shreyas Patel" => "shreyas@getcogno.ai" }
   spec.platform     = :ios, "11.0"
-  spec.source       = { :git => "https://github.com/cognoai/CognoChatbot-iOS.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/cognoai/CognoChatbot-iOS.git", :tag => "1.0.11" }
   spec.source_files  = "CognoChatbot-iOS/**/*.swift"
 
 end

@@ -22,7 +22,7 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
     let audioSession = AVAudioSession.sharedInstance()
     let synth = AVSpeechSynthesizer()
     
-    //  Access token verification
+//  Access token verification
     public func verifyToken(viewController: UIViewController, completion: @escaping (Bool) -> ()) {
         
         let url = URL(string: Constants.botUrl + Constants.tokenVerificationUrl)!
@@ -67,10 +67,11 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
                 print(error)
             }
         }
+        
         task.resume()
     }
     
-    //  Display & configure webview while token verification is true
+//  Display & configure webview while token verification is true
     public func dispWebView(viewController: UIViewController) {
         if Constants.isTokenVerify {
             let config: WKWebViewConfiguration = WKWebViewConfiguration()
@@ -119,7 +120,7 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
         }
     }
     
-    //  Text to Voice Conversion
+//  Text to Voice Conversion
     public func textToVoice(text: String, lang: String) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: lang)
@@ -129,7 +130,7 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
         synth.speak(utterance)
     }
     
-    //  Start recording audio
+//  Start recording audio
     private func startRecording() {
         if recognitionTask != nil {
             recognitionTask?.cancel()
@@ -211,7 +212,7 @@ extension ChatbotSDK: WKScriptMessageHandler {
             }
             
         } else if message.name == "speechToText" {
-            //  Handle Speech to Text Here
+//  Handle Speech to Text Here
             startRecording()
             var alertStyle = UIAlertController.Style.actionSheet
             var width: CGFloat = CGFloat()

@@ -26,12 +26,15 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
     public func verifyToken(viewController: UIViewController, completion: @escaping (Bool) -> ()) {
         let url = URL(string: Constants.botUrl + Constants.tokenVerificationUrl)!
         var request = URLRequest(url: url)
+        
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
+        
         let parameters: [String: Any] = [
             "bot_id": Constants.botId,
             "access_token": Constants.accessToken
         ]
+        
         request.httpBody = parameters.percentEncoded()
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
@@ -44,13 +47,16 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
             
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any]
+                
                 if let jsonData = json, jsonData["status"] as? Int == 200 {
                     Constants.isTokenVerify = true
+                    
                     DispatchQueue.main.async {
                         completion(true)
                     }
                 } else {
                     Constants.isTokenVerify = false
+                    
                     DispatchQueue.main.async {
                         completion(false)
                     }
@@ -177,6 +183,7 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
     }
 // Navigate webview according to url
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        
         if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
             if url.description.lowercased().range(of: "http://") != nil ||
                 url.description.lowercased().range(of: "https://") != nil ||
@@ -200,6 +207,7 @@ extension ChatbotSDK: WKScriptMessageHandler {
                 self.webViewGlobal.cleanAllCookies()
                 self.webViewGlobal.refreshCookies()
             }
+            
         } else if message.name == "speechToText" {
             //  Handle Speech to Text Here
             startRecording()
@@ -269,11 +277,13 @@ extension Dictionary {
 
 extension CharacterSet {
     static let urlQueryValueAllowed: CharacterSet = {
+        
         let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
         let subDelimitersToEncode = "!$&'()*+,;="
-        
         var allowed = CharacterSet.urlQueryAllowed
+        
         allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
+        
         return allowed
     }()
 }

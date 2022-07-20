@@ -24,6 +24,7 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
     
     //  Access token verification
     public func verifyToken(viewController: UIViewController, completion: @escaping (Bool) -> ()) {
+        
         let url = URL(string: Constants.botUrl + Constants.tokenVerificationUrl)!
         var request = URLRequest(url: url)
         
@@ -61,6 +62,7 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
                         completion(false)
                     }
                 }
+                
             } catch let error as NSError {
                 print(error)
             }

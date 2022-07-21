@@ -10,5 +10,9 @@ Pod::Spec.new do |spec|
   spec.platform     = :ios, "11.0"
   spec.source       = { :git => "https://github.com/cognoai/CognoChatbot-iOS.git", :tag => "#{spec.version}" }
   spec.source_files  = "CognoChatbot-iOS/**/*.swift"
+  spec.pod_target_xcconfig = {
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
+  }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
 end

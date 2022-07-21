@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1240"
+   LastUpgradeVersion = "1320"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EE4A5DDEC9D1BC576ED83F3666298A0C"
-               BuildableName = "Pods_CognoChatbot_iOS.framework"
-               BlueprintName = "Pods-CognoChatbot-iOS"
-               ReferencedContainer = "container:Pods.xcodeproj">
+               BlueprintIdentifier = "8DA7D936282010A500B1C1BF"
+               BuildableName = "CognoChatbot_iOS.framework"
+               BlueprintName = "CognoChatbot-iOS"
+               ReferencedContainer = "container:CognoChatbot-iOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,6 +47,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "8DA7D936282010A500B1C1BF"
+            BuildableName = "CognoChatbot_iOS.framework"
+            BlueprintName = "CognoChatbot-iOS"
+            ReferencedContainer = "container:CognoChatbot-iOS.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

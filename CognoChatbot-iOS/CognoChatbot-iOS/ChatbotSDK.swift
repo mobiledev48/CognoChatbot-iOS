@@ -314,7 +314,7 @@ extension ChatbotSDK: WKScriptMessageHandler {
         } else if message.name == "reloadChatbot" {
             Constants.mobileChatbotSessionID  = ""
             Constants.mobileLiveChatSessionID = ""
-            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&customerId=" + Constants.customerId + "&channel=iOS&mobile_session_id=" + Constants.mobileChatbotSessionID + "&livechat_session_id=" + Constants.mobileLiveChatSessionID) {
+            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS&mobile_session_id=" + Constants.mobileChatbotSessionID + "&livechat_session_id=" + Constants.mobileLiveChatSessionID) {
                 let request = URLRequest(url: _url)
                 webViewGlobal.load(request)
             }

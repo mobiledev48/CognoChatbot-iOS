@@ -70,9 +70,54 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
         
         task.resume()
     }
+
+// Check and expire livechat session id
+    public func verifyLiveChatSessionID(viewController: UIViewController) {
+
+        if Constants.mobileLiveChatSessionID == "" {
+            return
+        }
+
+        let url = URL(string: Constants.botUrl + Constants.livechatSessionIDVerificationUrl)!
+        var request = URLRequest(url: url)
+
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+
+        let parameters: [String: Any] = [
+            "livechat_session_id": Constants.mobileLiveChatSessionID,
+        ]
+
+        request.httpBody = parameters.percentEncoded()
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data,
+                  let response = response as? HTTPURLResponse,
+                  error == nil
+            else { return }
+
+            guard (200 ... 299) ~= response.statusCode else { return }
+
+            do {
+                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any]
+
+                if let jsonData = json, jsonData["status"] as? Int == 440 {
+                    Constants.mobileLiveChatSessionID = ""
+                }
+
+            } catch let error as NSError {
+                print(error)
+            }
+        }
+
+        task.resume()
+    }
+    
     
 //  Display & configure webview while token verification is true
     public func dispWebView(viewController: UIViewController) {
+        
+        verifyLiveChatSessionID(viewController: self)
         if Constants.isTokenVerify {
             let config: WKWebViewConfiguration = WKWebViewConfiguration()
             config.preferences.javaScriptCanOpenWindowsAutomatically = true
@@ -80,6 +125,12 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
             config.userContentController.add(self, name: "speechToText")
             config.userContentController.add(self, name: "textToVoice")
             config.userContentController.add(self, name: "terminateTextToVoice")
+            config.userContentController.add(self, name: "reloadChatbot")
+            config.userContentController.add(self, name: "setChatbotSessionID")
+            config.userContentController.add(self, name: "setLiveChatSessionID")
+            config.userContentController.add(self, name: "reloadChatbotForLiveChat")
+            
+            
             
             var webView: WKWebView? = nil {
                 didSet {
@@ -110,7 +161,7 @@ public class ChatbotSDK: UIViewController, UIWebViewDelegate, WKUIDelegate, WKNa
             guard let wv = webView else { return }
             webViewController.view.addSubview(wv)
 //  Change string url to with verified url
-            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS" + "&category_name=" + Constants.category) {
+            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS&mobile_session_id=" + Constants.mobileChatbotSessionID + "&livechat_session_id=" + Constants.mobileLiveChatSessionID) {
                 let request = URLRequest(url: _url)
                 webView?.load(request)
             }
@@ -210,9 +261,8 @@ extension ChatbotSDK: WKScriptMessageHandler {
                 self.webViewGlobal.cleanAllCookies()
                 self.webViewGlobal.refreshCookies()
             }
-            
         } else if message.name == "speechToText" {
-//  Handle Speech to Text Here
+
             startRecording()
             var alertStyle = UIAlertController.Style.actionSheet
             var width: CGFloat = CGFloat()
@@ -261,9 +311,32 @@ extension ChatbotSDK: WKScriptMessageHandler {
             
         } else if message.name == "terminateTextToVoice" {
             synth.stopSpeaking(at: .immediate)
+        } else if message.name == "reloadChatbot" {
+            Constants.mobileChatbotSessionID  = ""
+            Constants.mobileLiveChatSessionID = ""
+            if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS&mobile_session_id=" + Constants.mobileChatbotSessionID + "&livechat_session_id=" + Constants.mobileLiveChatSessionID) {
+                let request = URLRequest(url: _url)
+                webViewGlobal.load(request)
+            }
+        } else if message.name == "reloadChatbotForLiveChat" {
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1){
+                
+                if let _url = URL(string: Constants.botUrl + "/chat/index/?id=" + Constants.botId + "&channel=iOS&mobile_session_id=" + Constants.mobileChatbotSessionID + "&livechat_session_id=" + Constants.mobileLiveChatSessionID) {
+                    let request = URLRequest(url: _url)
+                    self.webViewGlobal.load(request)
+                }
+            }
+        } else if message.name == "setChatbotSessionID" {
+            
+            let sentData = message.body as! Dictionary<String, String>
+            Constants.mobileChatbotSessionID = sentData["mobile_session_id"] ?? ""
+        } else if message.name == "setLiveChatSessionID" {
+            
+            let sentData = message.body as! Dictionary<String, String>
+            Constants.mobileLiveChatSessionID = sentData["livechat_session_id"] ?? ""
         }
     }
-    
 }
 
 extension Dictionary {

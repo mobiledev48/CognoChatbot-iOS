@@ -335,6 +335,10 @@ extension ChatbotSDK: WKScriptMessageHandler {
             
             let sentData = message.body as! Dictionary<String, String>
             Constants.mobileLiveChatSessionID = sentData["livechat_session_id"] ?? ""
+        } else if message.name == "setSelectedLanguage" {
+            
+            let sentData = message.body as! Dictionary<String, String>
+            Constants.chatbotSelectedLanguage = sentData["selected_language"] ?? ""
         }
     }
 }

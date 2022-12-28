@@ -17,4 +17,5 @@ public class Constants {
     public static let livechatSessionIDVerificationUrl = "/livechat/get-livechat-session-expire/"
     public static var mobileChatbotSessionID = ""
     public static var mobileLiveChatSessionID = ""
+    public static var chatbotSelectedLanguage = "en"
 }

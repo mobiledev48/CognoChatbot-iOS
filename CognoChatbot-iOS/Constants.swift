@@ -9,6 +9,7 @@ import Foundation
 
 public class Constants {
     
+    public static var customerID = ""
     public static var botUrl = ""
     public static var botId = ""
     public static var accessToken = ""
